@@ -7,9 +7,9 @@ by Andrei Maruntis
 Testele sunt grupate cate 5, cu numarul de noduri egal cu:
 
 - 10
-- 50
+- 35
 - 100
-- 500
+- 350
 - 1000
 
 - Teste 1 - 5:
