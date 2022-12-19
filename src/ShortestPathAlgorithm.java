@@ -1,20 +1,20 @@
 public abstract class ShortestPathAlgorithm {
-    private int[][] distances;
-    private int nodes;
+    protected int[][] dist;
+    protected int nodes;
 
     public abstract void run();
 
-    public ShortestPathAlgorithm(int[][] distances, int lines, int cols) {
-        this.distances = distances;
-        this.nodes = lines;
+    public ShortestPathAlgorithm(int[][] dist, int nodes) {
+        this.dist = dist;
+        this.nodes = nodes;
     }
 
-    public int[][] getDistances() {
-        return distances;
+    public int[][] getDist() {
+        return dist;
     }
 
-    public void setDistances(int[][] distances) {
-        this.distances = distances;
+    public void setDist(int[][] dist) {
+        this.dist = dist;
     }
 
     public int getNodes() {
