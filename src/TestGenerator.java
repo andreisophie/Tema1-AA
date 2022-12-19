@@ -6,8 +6,6 @@ public class TestGenerator {
     private static final int INF = 99999;
     private static final Random RANDOM = new Random();
 
-    
-
     private static void generateTest(TestParams params) throws IOException {
         // initialize graph structures
         int[][] dist = new int[params.nodes + 1][params.nodes + 1];
@@ -72,11 +70,11 @@ public class TestGenerator {
             new TestParams(350, 0.5, type.DIRECTED, "in"),
             new TestParams(1000, 0.5, type.DIRECTED, "in"),
             // directed, dense
-            new TestParams(10, 0.8, type.UNDIRECTED, "in"),
-            new TestParams(35, 0.8, type.UNDIRECTED, "in"),
-            new TestParams(100, 0.8, type.UNDIRECTED, "in"),
-            new TestParams(350, 0.8, type.UNDIRECTED, "in"),
-            new TestParams(1000, 0.8, type.UNDIRECTED, "in"),
+            new TestParams(10, 0.8, type.DIRECTED, "in"),
+            new TestParams(35, 0.8, type.DIRECTED, "in"),
+            new TestParams(100, 0.8, type.DIRECTED, "in"),
+            new TestParams(350, 0.8, type.DIRECTED, "in"),
+            new TestParams(1000, 0.8, type.DIRECTED, "in"),
             // undirected, sparse
             new TestParams(10, 0.2, type.UNDIRECTED, "in"),
             new TestParams(35, 0.2, type.UNDIRECTED, "in"),

@@ -2,7 +2,10 @@ build:
 	javac *.java
 
 run:
-	java Main 2
+	java Main
+
+tests:
+	java TestGenerator
 
 clean:
 	rm -rf *.class out
