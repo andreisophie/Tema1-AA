@@ -1,8 +1,11 @@
+import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException{
+        RWOperations.createFiles(Integer.parseInt(args[0]));
+
         ShortestPathAlgorithm myAlgorithm = RWOperations.readInputs();
 
         Instant start = Instant.now();

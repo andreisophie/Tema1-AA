@@ -1,10 +1,8 @@
-CC=javac
-
 build:
 	javac *.java
 
 run:
-	java Main
+	java Main 1
 
 clean:
-	rm *.class
+	rm -rf *.class out

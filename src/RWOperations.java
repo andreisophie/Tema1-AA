@@ -1,11 +1,34 @@
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Scanner;
 
 public final class RWOperations {
-    public static Scanner scanner = new Scanner(System.in);
     public static int INF = 99999;
 
+    private static File inFile;
+    private static File outFile;
+    private static Scanner scanner;
+    private static FileWriter outWriter;
+
     private RWOperations() { }
+
+    public static void createFiles(int testNumber) throws IOException {
+        String inName = new String("in/test" + testNumber + ".in");
+        inFile = new File(inName);
+        scanner = new Scanner(inFile);
+
+        File directory = new File("out");
+        if (!directory.exists()) {
+            directory.mkdir();
+        }
+
+        String outName = new String("out/test" + testNumber + ".out");
+        outFile = new File(outName);
+        outFile.createNewFile();
+        outWriter = new FileWriter(outFile);
+    }
 
     public static ShortestPathAlgorithm readInputs() {
         int[][] dist;
@@ -33,7 +56,7 @@ public final class RWOperations {
         return newAlgorithm;
     }
 
-    public static void writeOutputs(ShortestPathAlgorithm algorithm) {
+    public static void writeOutputs(ShortestPathAlgorithm algorithm) throws IOException {
         int[][] dist = algorithm.getDist();
         int nodes = algorithm.getNodes();
 
@@ -44,7 +67,10 @@ public final class RWOperations {
             for (int j = 1; j <= nodes; j++) {
                 line.append((dist[i][j] < 99999 ? dist[i][j] : "NaN") + " ");
             }
-            System.out.println(line.toString());
+            line.append("\n");
+            outWriter.write(line.toString());
         }
+
+        outWriter.close();
     }
 }
