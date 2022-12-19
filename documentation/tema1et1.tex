@@ -1,0 +1,88 @@
+% This is samplepaper.tex, a sample chapter demonstrating the
+% LLNCS macro package for Springer Computer Science proceedings;
+% Version 2.20 of 2017/10/04
+%
+\documentclass[runningheads]{llncs}
+%
+\usepackage{hyperref}
+\usepackage{blindtext}
+\usepackage{graphicx}
+% Used for displaying a sample figure. If possible, figure files should
+% be included in EPS format.
+%
+% If you use the hyperref package, please uncomment the following line
+% to display URLs in blue roman font according to Springer's eBook style:
+% \renewcommand\UrlFont{\color{blue}\rmfamily}
+
+\begin{document}
+%
+\title{All-pairs shortest path problem}
+%
+%\titlerunning{Abbreviated paper title}
+% If the paper title is too long for the running head, you can set
+% an abbreviated paper title here
+%
+\author{Mărunțiș Andrei, 323CA}
+\institute{University Politehnica of Bucharest, Faculty of Automatic Control}
+%
+\maketitle              % typeset the header of the contribution
+%
+\begin{abstract}
+This paper will very succintly analyze the all-pairs shortest path problem and mention 3 algorithms that can be used to solve it. It will then explain how tests will be created to test the algorithms.
+
+\keywords{Graphs  \and Shortest path \and All-to-all}
+\end{abstract}
+%
+%
+%
+\section{Problem description}
+The all-pairs shortest path problem allows us to find the shortest path between any two nodes in a graph (that can be a set of cities with roads connecting them, or computers connected to the internet via cables). This optimization problem allows us to save resources such as time or fuel by finding the most efficient path between two points. Practical applications for this problem can be transportation of goods between cities, or internet communication between computers.
+
+This problem is used when we need to find to answer multiple queries of the type \textit{"what is the shortest path from node A to node B?"}. The environment where this problem is applied needs to be static, meaning the costs of the vertices need to remain constant over time or at least change infrequently, so that a large number of interrogations can be executed. If this condition is not met (for example, a GPS application cannot use this type of preprocessing, since traffic changes all the time), then it is more efficient to answer each individual query by running a shortest path algorithm.
+
+\section{Algorithms}
+\subsection{Dijkstra's Algorithm}
+Dijkstra's Algorithm \textit{fixes a single node as the "source" node and finds shortest paths from the source to all other nodes in the graph, producing a shortest-path tree.}\cite{ref_url_Dj} 
+
+In order to solve the all-pairs shortest path problem with this algorithm, some modifications need to be made: we need to run Dijkstra's algorithm multiple times, once for each node except for the last one. This is because when the first \(N - 1\) computations are completed, we have found the shortest path from the first \(N - 1\) nodes to the \textit{N}-th node and no more processing is necessary. 
+
+Furthermore, with each iteration of the algorithm, the next iteration becomes faster, as it needs to analize fewer nodes (the \textit{k}-th iteration needs to analize \(N - k + 1\) nodes, as the first \(k - 1\) nodes have already been processed).
+
+\subsection{Bellman-Ford Algorithm}
+The Bellman-Ford Algorithm is similar to Dijkstra's Algorithm, with some differences: it is slower, but \textit{more versatile, as it is capable of handling graphs in which some of the edge weights are negative numbers.}\cite{ref_url_BF} If there is a negative cycle in the graph being analysed, the Bellman-Ford Algorithm can detect and report it. Similarly to Dijkstra's Algorithm, we need to apply the Bellman-Ford Algorithm multiple times to solve the all-pairs shortest path problem: once for each node, except for the last one.
+
+One of the restrictions of this algorithm is that it can only be applied efficiently on directed graphs with or without negative edges. In an undirected graph, Dijkstra's algorithm is asymptotically faster than Bellman-Ford and it can only run on graphs with positive edges, since any negative edge would define a negative cycle. Therefore, Dijkstra's Algorithm is always faster on undirected graphs.
+
+\subsection{Floyd-Warshall Algorithm}
+The Floyd-Warshall Algorithm is an exhaustive algorithm that tests every possible combination of edges in a graph to calculate the shortest path between any 2 nodes. Unlike the other two algorithms mentioned, a single execution will find the lowest cost of the paths between any 2 nodes.
+
+Similarly to the Bellman-Ford Algorithm, the Floyd-Warshall Algorithm can work on directed graphs with or without negative edges, but without negative cycles. It is also capable of detecting negative cycles.
+
+\section{Evaluating the solutions}
+The parameter that I am interested in the most when evaluating each algorithm is running time, as it directly represents the complexity and efficiency of each algorithm. Another metric that I am interested in is the correctness of the solutions, as some algorithms might be unable to run on some graphs (for example, Dijkstra's Algorithm on a graph with negative costs).
+
+To evaluate the solutions I will use multiple tests with various types of inputs representing various types of graphs. The tests will cover a large variety of graphs: directed and undirected, dense and sparse, with positive and negative costs (combinations of these). Each type of graph will have multiple tests, with increasingly large numbers of nodes and edges to thoroughly test their efficiency. I am expecting some algorithms to give wrong answers to some graphs, as per the example given above.
+
+The numerical values in these tests will be randomly generated with various upper bounds. The upper bound will increase with the number of nodes to have as many edges with different values and I will also test the inputs to have as few acyclic graphs or graphs with a small number of cycles, since an acyclic graph has at most exactly one path from any node to any other node. In addition, I will be creating the tests to have graphs of each type, as mentioned in the paragh above.
+
+% ---- Bibliography ----
+%
+% BibTeX users should specify bibliography style 'splncs04'.
+% References will then be sorted and formatted in the correct style.
+
+\bibliographystyle{splncs04}
+% \bibliography{mybibliography}
+\begin{thebibliography}{8}
+\bibitem{ref_url_dense}
+\href{https://en.wikipedia.org/wiki/Dense_graph}{Wikipedia: Dense graphs} (Last access: 24 nov 2022)
+
+\bibitem{ref_url_Dj}
+\href{https://en.wikipedia.org/wiki/Dijkstra\%27s_algorithm}{Wikipedia: Djikstra's Algorithm} (Last access: 24 nov 2022)
+
+\bibitem{ref_url_BF}
+\href{https://en.wikipedia.org/wiki/Bellman\%E2\%80\%93Ford_algorithm}{Wikipedia: Bellman-Ford Algorithm} (Last access: 24 nov 2022)
+
+\bibitem{ref_url_FW}
+\href{https://en.wikipedia.org/wiki/Floyd\%E2\%80\%93Warshall_algorithm}{Wikipedia: Floys-Warshall Algorithm} (Last access: 24 nov 2022)
+\end{thebibliography}
+\end{document}
