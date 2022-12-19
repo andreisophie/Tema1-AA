@@ -1,8 +1,11 @@
 build:
 	javac *.java
 
-run:
-	java Main
+run-1:
+	java Main 1
+
+run-3:
+	java Main 3
 
 tests:
 	java TestGenerator

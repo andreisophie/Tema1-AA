@@ -3,7 +3,6 @@ import java.util.Arrays;
 import java.util.Random;
 
 public class TestGenerator {
-    private static final int INF = 99999;
     private static final Random RANDOM = new Random();
 
     private static void generateTest(TestParams params) throws IOException {
@@ -11,7 +10,7 @@ public class TestGenerator {
         int[][] dist = new int[params.nodes + 1][params.nodes + 1];
 
         for (int i = 1; i <= params.nodes; i++) {
-            Arrays.fill(dist[i], INF);
+            Arrays.fill(dist[i], ShortestPathAlgorithm.INF);
             dist[i][i] = 0;
         }
 
@@ -29,7 +28,7 @@ public class TestGenerator {
                 n1 = RANDOM.nextInt(params.nodes) + 1;
                 n2 = RANDOM.nextInt(params.nodes) + 1;
                 cost = RANDOM.nextInt(maxCost) + 1;
-            } while (n1 == n2 || dist[n1][n2] != INF);
+            } while (n1 == n2 || dist[n1][n2] != ShortestPathAlgorithm.INF);
             dist[n1][n2] = cost;
             if (params.graphType == type.UNDIRECTED) {
                 dist[n2][n1] = cost;
@@ -39,7 +38,7 @@ public class TestGenerator {
         params.outWriter.write(params.nodes + " " + params.vertices + "\n");
         for (int i = 1; i <= params.nodes; i++) {
             for (int j= 1; j <= params.nodes; j++) {
-                if (dist[i][j] == 0 || dist[i][j] == INF) {
+                if (dist[i][j] == 0 || dist[i][j] == ShortestPathAlgorithm.INF) {
                     continue;
                 }
                 params.outWriter.write(i + " " + j + " " + dist[i][j] + "\n");

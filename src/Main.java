@@ -9,7 +9,7 @@ public class Main {
         for (int i = 1; i <= NR_TESTS; i++) {
             RWOperations.createFiles(i);
 
-            ShortestPathAlgorithm myAlgorithm = RWOperations.readInputs();
+            ShortestPathAlgorithm myAlgorithm = RWOperations.readInputs(Integer.parseInt(args[0]));
 
             Instant start = Instant.now();
             myAlgorithm.run();

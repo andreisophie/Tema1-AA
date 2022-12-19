@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Scanner;
 
 public final class RWOperations {
-    public static int INF = 99999;
 
     private static File inFile;
     private static File outFile;
@@ -30,7 +29,7 @@ public final class RWOperations {
         outWriter = new FileWriter(outFile);
     }
 
-    public static ShortestPathAlgorithm readInputs() {
+    public static ShortestPathAlgorithm readInputs(int algorithmType) {
         int[][] dist;
         int nodes;
 
@@ -38,7 +37,7 @@ public final class RWOperations {
         dist = new int[nodes + 1][nodes + 1];
 
         for (int i = 1; i <= nodes; i++) {
-            Arrays.fill(dist[i], INF);
+            Arrays.fill(dist[i], ShortestPathAlgorithm.INF);
             dist[i][i] = 0;
         }
 
@@ -52,8 +51,19 @@ public final class RWOperations {
             dist[n1][n2] = cost;
         }
 
-        ShortestPathAlgorithm newAlgorithm = new FloydWarshall(dist, nodes);
-        return newAlgorithm;
+        switch (algorithmType) {
+            case 1 -> {
+                return new Dijkstra(dist, nodes);
+            }
+            case 3 -> {
+                return new FloydWarshall(dist, nodes);
+            }
+            default -> {
+                System.out.println("Invalid algorithm");
+                System.exit(-1);
+                return null;
+            }
+        }
     }
 
     public static void writeOutputs(ShortestPathAlgorithm algorithm) throws IOException {
@@ -65,7 +75,7 @@ public final class RWOperations {
         for (int i = 1; i <= nodes; i++) {
             line = new StringBuilder();
             for (int j = 1; j <= nodes; j++) {
-                line.append((dist[i][j] < 99999 ? dist[i][j] : "NaN") + " ");
+                line.append((dist[i][j] < ShortestPathAlgorithm.INF ? dist[i][j] : "NaN") + " ");
             }
             line.append("\n");
             outWriter.write(line.toString());

@@ -1,6 +1,7 @@
 public abstract class ShortestPathAlgorithm {
     protected int[][] dist;
     protected int nodes;
+    public static final int INF = 99999;
 
     public abstract void run();
 
