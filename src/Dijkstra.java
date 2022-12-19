@@ -38,14 +38,14 @@ public class Dijkstra extends ShortestPathAlgorithm {
         int[] minDist = new int[nodes + 1];
         boolean[] viz = new boolean[nodes + 1];
         int nextNode;
-        for(int k = 1; k <= nodes; k++) {
+        for(int nrIter = 1; nrIter <= nodes; nrIter++) {
             Arrays.fill(minDist, INF);
             Arrays.fill(viz, false);
 
-            minDist[k] = 0;
+            minDist[nrIter] = 0;
 
-            checkNode(minDist, viz, k);
-            viz[k] = true;
+            checkNode(minDist, viz, nrIter);
+            viz[nrIter] = true;
 
             for (int i = 2; i <= nodes; i++) {
                 nextNode = findNextNode(minDist, viz);
@@ -57,7 +57,7 @@ public class Dijkstra extends ShortestPathAlgorithm {
             }
 
             for (int i = 1; i <= nodes; i++) {
-                dist[k][i] = minDist[i];
+                dist[nrIter][i] = minDist[i];
             }
         }
     }

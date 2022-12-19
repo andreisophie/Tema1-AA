@@ -55,6 +55,9 @@ public final class RWOperations {
             case 1 -> {
                 return new Dijkstra(dist, nodes);
             }
+            case 2 -> {
+                return new BellmanFord(dist, nodes);
+            }
             case 3 -> {
                 return new FloydWarshall(dist, nodes);
             }
