@@ -2,7 +2,7 @@ build:
 	javac *.java
 
 run:
-	java Main 1
+	java Main 2
 
 clean:
 	rm -rf *.class out
