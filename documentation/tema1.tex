@@ -7,6 +7,8 @@
 \usepackage{hyperref}
 \usepackage{blindtext}
 \usepackage{graphicx}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
 % Used for displaying a sample figure. If possible, figure files should
 % be included in EPS format.
 %
@@ -62,77 +64,181 @@ However, the notion of sparse/dense graphs is not clearly defined. A sparse grap
 Generally, it is more efficient to represent a sparse graph in memory as an \textbf{adjacency list}, while a dense graph is better represented as a \textbf{matrix of adjacency}.
 
 \subsubsection{Positive vs negative costs}
-A graph with positive costs has all edges with positive costs, while a graph with negative costs has an least one edge with negative costs. However, a graph must not have a negative cycle (i.e. a cycle whose edge costs sum to a negative value) in order to be solvable (because if there is a negative cycle, then we can find paths between two nodes with infinitely negative costs, obtained by traveling multiple times around the negative cycle).
+A graph with positive costs has all edges with positive costs, while a graph with negative costs has an least one edge with negative cost. However, a graph must not have a negative cycle (i.e. a cycle whose edge costs sum to a negative value) in order to be solvable (because if there is a negative cycle, then we can find paths between two nodes with infinitely negative cost, obtained by traveling multiple times around the negative cycle).
 
 \section{Algorithms}
+All algorithms will be presented with a brief description of their functionality, pseudocode and description of their complexities.
+
 \subsection{Dijkstra's Algorithm}
-Dijkstra's Algorithm \textit{fixes a single node as the "source" node and finds shortest paths from the source to all other nodes in the graph, producing a shortest-path tree.}\cite{ref_url_Dj} 
+\subsubsection{Description}
+Dijkstra's Algorithm \textit{fixes a single node as the "source" node and finds shortest paths from the source to all other nodes in the graph, producing a shortest-path tree.}\cite{ref_url_Dj} Initially, only the source node is visited. With each step, the algorithm chooses the closest, unvisited node $n$ of the source (that is guaranteed to already have the correct shortest distance) and visits it. Then every other unvisited node is selected as destination and the algorithm asks the question \emph{Is there a shorter path from source to destination that passes through n?} If the answer is positive, then the shortest path between the source and destination is updated. When all nodes are visited, the algorithm is complete and we have the shortest path tree.
 
-In order to solve the all-pairs shortest path problem with this algorithm, some modifications need to be made: we need to run Dijkstra's algorithm multiple times, once for each node except for the last one. This is because when the first \(N - 1\) computations are completed, we have found the shortest path from all \(N - 1\) nodes to the \textit{Nth} node and no more processing is necessary. 
+\subsubsection{Pseudocode}
+The pseudocode for the algorithm is shown below(Source: \cite{ref_url_Dj}):
 
-Furthermore, with each iteration of the algorithm, the following iteration becomes faster, as it needs to analize fewer nodes (the \textit{k-th} iteration needs to analize \(N - k + 1\) nodes, as the first \(k - 1\) nodes have already been processed).
+\begin{algorithm}
+\caption{Dijkstra's Algorithm}\label{algD:cap}
+\begin{algorithmic}[1]
+\ForAll{node $n$ in Nodes}
+	\State $dist[n] \gets INF$
+\EndFor
+\State $dist[source] \gets 0$
+\While{$Q$ is not empty}
+	\State $u \gets $node in $Q$ with min $dist[u]$
+	\State remove $u$ from $Q$
+	\ForAll{neighbour $v$ of $u$ still in $Q$}
+		\State $altDist \gets dist[u] + $cost$(u, v)$
+		\If{$altDist < dist[v]$}
+			\State $dist[v] \gets altDist$
+		\EndIf
+	\EndFor
+\EndWhile
+\end{algorithmic}
+\end{algorithm}
+
+The meanings of the variables are:
+\begin{itemize}
+	\item $dist$ is the array of shortest path distances from source to every other node known so far, and its initial value should be $INF$ for all nodes except the source
+	\item Nodes is a data structure that describes the nodes of the graph
+	\item $Q$ is a set that contains all the unvisited nodes (therefore at the start of the execution it contains all nodes)
+\end{itemize}
+
+\subsubsection{Complexity}
+The complexity of this algorithm is $\Theta(N^2)$ when implemented using a simple array for the set $Q$, but its complexity can be improved to  $\Theta((N+E)logN)$ when using a min-priority queue and to $\Theta(E+NlogN)$ when using a Fibonacci heap (this version of Dijkstra's algorithm is the fastest known algorithm to find the shortest-path tree in a graph). For large graphs, we can consider the following relation between the number of nodes and edges: $E \approx N^2 \cdot D$, where $D$ is the density of the graph as defined in section 2 and is a constant between 0 and 1. Therefore, for large graphs that are not sparse, the complexity of Dijkstra's Algorithm can be considered as $\Theta(N^2)$ regardless of implementation.
+
+In order to solve the all-pairs shortest path problem with this algorithm, some modifications need to be made: we need to run Dijkstra's algorithm multiple times, setting each node as the source. This way, the complexity of the all-to-all shortest paths algorithm becomes $\Theta(N^3)$ on directed graphs when using Dijkstra's Algorithm.
+
+\subsubsection{Other optimizations}
+In an undirected graph, we know for certain that the shortest path from 1 to 2 is also the shortest path from 2 to 1. Therefore, we can make the following optimization: after running the agorithm with node 1 as the source we know the shortest path from 1 to 2, so we can consider node 1 as visited when running the algorithm wih 2 as source. Similarly, when node 3 is set as source, nodes 1 and 2 can be considered visited etc. Therefore, when node 1 is set as source, $N$ nodes need to be visited which requires roughly $N^2$ operations, when node 2 is the source we need to visit $N-1$ nodes which requires $(N-1)^2$ operations etc. The total number of operations that we need to execute is:
+\begin{equation}
+N^2+(N-1)^2+...+1^2 = \frac{N(N+1)(2N+1)}{6} \approx \frac{N^3}{3}
+\end{equation}
+
+While this optimization does not reduce complexity, it does reduce the running time considerably when processing undirected graphs.
+
+One last thing worth mentioning about this algorithm is that the multiple runs of Dijkstra's algorithm are \textbf{independent} (whichever node is selected as source, it onlt requires the data about graph structure). Therefore, unless the optimization presented above for undirected graphs is used, the algorithm can run on multiple cores, shortening its running time.
 
 \subsection{Bellman-Ford Algorithm}
-The Bellman-Ford Algorithm is similar to Dijkstra's Algorithm; it is slower, but \textit{more versatile, as it is capable of handling graphs in which some of the edge weights are negative numbers.}\cite{ref_url_BF} If there is a negative cycle in the graph that is analysed, the Bellman-Ford Algorithm can detect and report it. Similarly to Dijkstra's Algorithm, we need to apply the Bellman-Ford Algorithm multiple times to solve the all-pairs shortest path problem: once for each node, except for the last one.
+\subsubsection{Description}
+The Bellman-Ford Algorithm is similar to Dijkstra's Algorithm; it is slower, but \textit{more versatile, as it is capable of handling graphs in which some of the edge weights are negative numbers.}\cite{ref_url_BF} If there is a negative cycle in the graph that is analysed, the Bellman-Ford Algorithm can detect and report it. The algorithm functions very similarly do Dijkstra's algorithm: it sets a node as source and for every edge asks the question \textit{Is there a shorter path from the source to any other node that passes through this edge?} If the answer is positive, then the shortest path is updated. This process needs to be repeated $V-1$ times. As we can see, the Bellman-Ford algorithm functions very similarly to Dijkstra's Algorithm, but it improves the distances by checking if the path contains an edge instead of a node.
 
 One of the restrictions of this algorithm is that it can only be applied efficiently on directed graphs with or without negative edges. In an undirected graph, Dijkstra's algorithm is asymptotically faster than Bellman-Ford and it cannot run on graphs with negative edges, since any negative edge will define a negative cycle. Therefore, Dijkstra's Algorithm is always faster in such a case.
 
+\subsubsection{Pseudocode}
+The pseudocode for the algorithm is shown below(Source: \cite{ref_url_BF}):
+\begin{algorithm}
+\caption{Bellman-Ford Algorithm}\label{algBF:cap}
+\begin{algorithmic}[1]
+\ForAll{node $n$ in Nodes}
+	\State $dist[n] \gets INF$
+\EndFor
+\State $dist[source] \gets 0$
+\For{$N-1$ times}
+	\ForAll{edge $e$ in Edges}
+		\State $(n1, n2, cost) \gets e$
+		\If{$dist[n1] + cost < dist[n2]$}
+			\State $dist[n2] = dist[n1] + cost$
+		\EndIf
+	\EndFor
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+
+The meanings of the variables are:
+\begin{itemize}
+	\item $dist$ is the array of shortest path distances from source to every other node known so far, and its initial value should be $INF$ for all nodes except the source
+	\item Nodes, Edges are two data structures that describe the graph
+	\item each edge contains information n1 - starting node, n2 - destination node, and cost
+\end{itemize}
+
+\subsubsection{Complexity}
+The Bellman-Ford Algorithm has complexity $\Theta(N \cdot E)$. Making the same assumption used for analizing Dijkstra's Algorithm, that for large graphs, the relation between the number of nodes and edges is $E \approx N^2 \cdot D$ with $D \in [0,1]$, we can say that the Bellman-Ford algorithm has a complexity of $\Theta(N^3)$ for large, dense graphs. This makes it extremely inefficient at finding the shortest path tree, but it can run on graphs with negative costs.
+
+Similarly to Dijkstra's Algorithm, we need to apply the Bellman-Ford Algorithm multiple times to solve the all-pairs shortest path problem: once for each node. We select each node as source and run the algorithm that has complexity $\Theta(N^3)$, making the total complexity for solving the all-pairs shortest path problem $\Theta(N^4)$. This is very inefficient and can only run graphs with up to a few hundred nodes in decent time.
+
+\subsubsection{Other optimizations}
+Similarly to Djikstra's algorithm, the Bellman-Ford algorithm can be parallelised for increased performance.
+
+Another significant improvement that can be brought to this algorithm is checking only the edges that can improve the shortest path. After a run through all the edges of the graph, the shortest path to some nodes may not have improved, in which case the edges adjacent to those nodes will not improve the shortest paths to any other nodes. Therefore, we can ignore them for the next runs through the edges of the graph. This mechanism can be implemented with a heap or a queue, in which case the theoretical complexity of the algoritm becomes $\Theta(N \cdot ElogN)$ and $\Theta(N \cdot E)$, respectively\cite{ref_url_IABF}. However, in practice, despite the complexities being the same/worse, this version of the algorithm is lineraly faster than the normal version.
+
 \subsection{Floyd-Warshall Algorithm}
-The Floyd-Warshall Algorithm is an exhaustive algorithm that tests every possible combination of edges in a graph to calculate the shortest path between any 2 nodes. Unlike the other two algorithms mentioned, a single execution will find the lowest cost of the paths between any 2 nodes.
+\subsubsection{Description}
+The Floyd-Warshall Algorithm is the first algorithm analysed in this paper that is specialised for solving the all-pairs shortest path problem. It is an exhaustive algorithm that tests every possible combination of edges in a graph to calculate the shortest path between any 2 nodes. Unlike the other two algorithms mentioned, a single execution will find the lowest cost of the paths between any 2 nodes.
 
 Similarly to the Bellman-Ford Algorithm, the Floyd-Warshall Algorithm can work on directed graphs with or without negative edges, but without negative cycles. It is also capable of detecting negative cycles.
 
-\subsubsection{Sample Heading (Third Level)} Only two levels of
-headings should be numbered. Lower level headings remain unnumbered;
-they are formatted as run-in headings.
+The Floyd-Warshall algorithm tests for all triplets of nodes (source, intermediate, destination) whether a path from source to destination that passes thorugh intermediate is faster than the currently known best path from source to destination. It first sets the intermediate node and then checks if the condition described above is true for all pairs of source and destination nodes, then proceeds to the next intermediate node and repeats the steps. This is a very short, simple and elegant algorithm that can be easily understood by reading its pseudocode or implementation.
 
-\paragraph{Sample Heading (Fourth Level)}
-The contribution should contain no more than four levels of
-headings. Table~\ref{tab1} gives a summary of all heading levels.
+\subsubsection{Pseudocode}
+The pseudocode for the algorithm is shown below(Source: \cite{ref_url_FW}):
+\begin{algorithm}
+\caption{Floyd-Warshall Algorithm}\label{algBF:cap}
+\begin{algorithmic}[1]
+\For{$k \gets 1, N$}
+	\For{$i \gets 1, N$}
+		\For{$j \gets 1, N$}
+			\If{dist[i][k]+dist[k][j] < dist[i][j]}
+				\State $dist[i][j] \gets dist[i][k]+dist[k][j]$
+			\EndIf
+		\EndFor
+	\EndFor
+\EndFor
+\end{algorithmic}
+\end{algorithm}
 
-\begin{table}
-\caption{Table captions should be placed above the
-tables.}\label{tab1}
-\begin{tabular}{|l|l|l|}
-\hline
-Heading level &  Example & Font size and style\\
-\hline
-Title (centered) &  {\Large\bfseries Lecture Notes} & 14 point, bold\\
-1st-level heading &  {\large\bfseries 1 Introduction} & 12 point, bold\\
-2nd-level heading & {\bfseries 2.1 Printing Area} & 10 point, bold\\
-3rd-level heading & {\bfseries Run-in Heading in Bold.} Text follows & 10 point, bold\\
-4th-level heading & {\itshape Lowest Level Heading.} Text follows & 10 point, italic\\
-\hline
+In the pseudocode above, $dist$ is initially the matrix of adjacency of the graph and after the algorithm finishes, it will contain the shortest distances between any 2 nodes.
+
+\subsubsection{Complexity}
+As can be easily seen above, the complexity of the algorithm is $\Theta(N^3)$, and not many significant optimizations can be brought.
+
+\section{Comparison of the algorithms}
+\subsection{Theoretical complexities}
+First, let's sum up the complexities of the algorithms in the preceding section ($N$ = number of nodes, $E$ = number of edges):
+\begin{itemize}
+	\item Dijkstra's Algorithm:  $\Theta(N^3)$ for a simple implementation, up to $\Theta(N(E+NlogN)) = \Theta(N \cdot E + N^2logN)$ for implementation with Fibonacci heap,  $\approx \Theta(N^3)$ for large, dense graphs even when using Fibonacci heaps
+	\item Bellman-Ford Algorithm: $\Theta(N^2 \cdot E) \approx \Theta(N^4)$ for large, dense graphs
+	\item Floyd-Warshall Algorithm: $\Theta(N^3)$
+\end{itemize}
+
+It is easy to rule out the Bellman-Ford algorithm as the least efficient algorithm of the three. When compared to Dijkstra's Algorithm, it is always slower but has the advatage of being able to process graphs with negative costs, while it has no advantage over Floyd-Warshall: it is always slower and both can process graphs with negative weights. Therefore, Bellman-Ford is overall a bad algorithm for solving the all-to-all shortest path problem. However, it is used in Johnson's Algorithm which has a complexity of $\Theta(N \cdot E + N^2logN)$ (same as Dijkstra) and is able to process graphs with negative weights. Johnson's Algorithm is one of the most versatile and fastest algorithms for solving the all-to-all shortest path problem, but it is not discussed here in detail.]
+
+However, when comparing Dijkstra's and Floyd-Warshall algorithms, there are situations where either is more suitable. Since the Bellman-Ford algorithm has a complexity that does not depend on E (the number of edges), as it always checks all possible paths, it is better suited for dense graphs (it will have a similar running time for a graph with density $D=0.2$ and $D=0.9$). Similarly, for sparse graphs, Djikstra's Algorithm implemented with a Fibonacci heap is better than Floyd-Warshall, since its complexity depends on E the number of edges. However, we need to remember that for graphs that can have negative edge costs, we cannot use Dijkstra's algorithm and instead need one of the other algorithms.
+
+\subsection{Practical testing}
+For testing I have implemented a version for each algorithm:
+\begin{itemize}
+	\item Simple Dijkstra's Algorithm using an array for the set $Q$
+	\item Bellman-Ford algorithm
+	\item Floyd-Warshall algorithm
+\end{itemize}
+
+The programming language that I used is Java, which is an interpreted lanaguage and therefore, solutions written in lower-level languages like C/C++ might be faster than this implementation. For testing, I have prepared a set of 30 tests containing graphs grouped into 6 families:
+\begin{itemize}
+	\item Directed graphs
+	\begin{itemize}
+		\item sparse: $D=0.2$
+		\item average density: $D=0.5$
+		\item dense: $D=0.8$
+	\end{itemize}
+	\item Undirected graphs
+	\begin{itemize}
+		\item sparse: $D=0.2$
+		\item average density: $D=0.5$
+		\item dense: $D=0.8$
+	\end{itemize}
+\end{itemize}
+
+Each graph family contains a randomly-generated graph with 10, 35, 100, 350 and 1000 nodes. This set of 30 tests can test the algorithms against all kinds of graphs, detecting which algorithms are best in which situations.
+
+For each dataset I have run the algorithms 5 times and calculated the average time, which appears in the table below. It is worth noting, however, that the Bellman-Ford algorithm has a running time of 10-60 minutes on tests with 1000 nodes, so I only have one set of data for these cases.
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|c|c|}
+Test Nr & N	 & Type & D & E & Dijkstra & Bellman-Ford& Floyd-Warshall
 \end{tabular}
-\end{table}
+\end{center}
 
 
-\noindent Displayed equations are centered and set on a separate
-line.
-\begin{equation}
-x + y = z
-\end{equation}
-Please try to avoid rasterized images for line-art diagrams and
-schemas. Whenever possible, use vector graphics instead (see
 
-\begin{theorem}
-This is a sample theorem. The run-in heading is set in bold, while
-the following text appears in italics. Definitions, lemmas,
-propositions, and corollaries are styled the same way.
-\end{theorem}
-%
-% the environments 'definition', 'lemma', 'proposition', 'corollary',
-% 'remark', and 'example' are defined in the LLNCS documentclass as well.
-%
-\begin{proof}
-Proofs, examples, and remarks have the initial word in italics,
-while the following text appears in normal font.
-\end{proof}
-For citations of references, we prefer the use of square brackets
-and consecutive numbers. Citations using labels or the author/year
-convention are also acceptable. The following bibliography provides
-a sample reference list with entries for journal
-\cite{ref_url_Dj}.
 %
 % ---- Bibliography ----
 %
@@ -147,12 +253,15 @@ a sample reference list with entries for journal
 \href{https://en.wikipedia.org/wiki/Dense_graph}{Wikipedia: Dense graphs} (Last access: 24 nov 2022)
 
 \bibitem{ref_url_Dj}
-\href{https://en.wikipedia.org/wiki/Dijkstra\%27s_algorithm}{Wikipedia: Djikstra's Algorithm} (Last access: 24 nov 2022)
+\href{https://en.wikipedia.org/wiki/Dijkstra\%27s_algorithm}{Wikipedia: Djikstra's Algorithm} (Last access: 22 edc 2022)
 
 \bibitem{ref_url_BF}
-\href{https://en.wikipedia.org/wiki/Bellman\%E2\%80\%93Ford_algorithm}{Wikipedia: Bellman-Ford Algorithm} (Last access: 24 nov 2022)
+\href{https://en.wikipedia.org/wiki/Bellman\%E2\%80\%93Ford_algorithm}{Wikipedia: Bellman-Ford Algorithm} (Last access: 22 dec 2022)
 
 \bibitem{ref_url_FW}
-\href{https://en.wikipedia.org/wiki/Floyd\%E2\%80\%93Warshall_algorithm}{Wikipedia: Floys-Warshall Algorithm} (Last access: 24 nov 2022)
+\href{https://en.wikipedia.org/wiki/Floyd\%E2\%80\%93Warshall_algorithm}{Wikipedia: Floyd-Warshall Algorithm} (Last access: 24 nov 2022)
+
+\bibitem{ref_url_IABF}
+\href{https://www.infoarena.ro/problema/bellmanford}{Infoarena: Bellman-Ford} (Last access: 22 dec 2022)
 \end{thebibliography}
 \end{document}
