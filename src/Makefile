@@ -10,6 +10,9 @@ run-p1:
 run-p2:
 	java Test 2
 
+run-p3:
+	java Test 3
+
 run-best-all:
 	java Main 3
 
@@ -18,6 +21,9 @@ run-p1-all:
 
 run-p2-all:
 	java Main 2
+
+run-p3-all:
+	java Main 3
 
 tests:
 	java TestGenerator
