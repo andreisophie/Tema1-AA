@@ -19,6 +19,9 @@ public class BellmanFord extends ShortestPathAlgorithm {
                 int n2 = edge.getN2();
                 int cost = edge.getCost();
                 for (int i = 1; i <= nodes; i++) {
+                    if (dist[i][n1] == INF) {
+                        continue;
+                    }
                     if (dist[i][n1] + cost < dist[i][n2]) {
                         dist[i][n2] = dist[i][n1] + cost;
                     }
