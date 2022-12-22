@@ -48,12 +48,6 @@ public class TestGenerator {
         params.outWriter.close();
     }
 
-    /**
-     * args[0] = number of nodes (int)
-     * args[1] = graph density (double)
-     * args[2] = "directed" or "undirected" (string)
-     * args[3] = path to output file ("../in/testX.in")
-     */
     public static void main(String[] args) throws IOException {
         final TestParams[] testsParams = {
             // directed, sparse

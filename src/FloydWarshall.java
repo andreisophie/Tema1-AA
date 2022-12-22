@@ -1,6 +1,8 @@
+import java.util.ArrayList;
+
 public class FloydWarshall extends ShortestPathAlgorithm {
-    public FloydWarshall(int[][] dist, int nodes) {
-        super(dist, nodes);
+    public FloydWarshall(int[][] dist, int nodes, ArrayList<Edge> edges) {
+        super(dist, nodes,edges);
     }
 
     @Override

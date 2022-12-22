@@ -1,6 +1,7 @@
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
 
@@ -14,8 +15,8 @@ public final class RWOperations {
     private RWOperations() { }
 
     public static void createFiles(int testNumber) throws IOException {
-        String inName = new String("in/test" + testNumber + ".in");
-        inFile = new File(inName);
+        String inPath = new String("in/test" + testNumber + ".in");
+        inFile = new File(inPath);
         scanner = new Scanner(inFile);
 
         File directory = new File("out");
@@ -23,8 +24,19 @@ public final class RWOperations {
             directory.mkdir();
         }
 
-        String outName = new String("out/test" + testNumber + ".out");
-        outFile = new File(outName);
+        String outPath = new String("out/test" + testNumber + ".out");
+        outFile = new File(outPath);
+        outFile.createNewFile();
+        outWriter = new FileWriter(outFile);
+    }
+
+    public static void createFileTest() throws IOException {
+        String inPath = new String("test.in");
+        inFile = new File(inPath);
+        scanner = new Scanner(inFile);
+
+        String outPath = new String("test.out");
+        outFile = new File(outPath);
         outFile.createNewFile();
         outWriter = new FileWriter(outFile);
     }
@@ -32,6 +44,7 @@ public final class RWOperations {
     public static ShortestPathAlgorithm readInputs(int algorithmType) {
         int[][] dist;
         int nodes;
+        ArrayList<Edge> edges = new ArrayList<>();
 
         nodes = scanner.nextInt();
         dist = new int[nodes + 1][nodes + 1];
@@ -49,17 +62,18 @@ public final class RWOperations {
             cost = scanner.nextInt();
 
             dist[n1][n2] = cost;
+            edges.add(new Edge(n1, n2, cost));
         }
 
         switch (algorithmType) {
             case 1 -> {
-                return new Dijkstra(dist, nodes);
+                return new Dijkstra(dist, nodes, edges);
             }
             case 2 -> {
-                return new BellmanFord(dist, nodes);
+                return new BellmanFord(dist, nodes, edges);
             }
             case 3 -> {
-                return new FloydWarshall(dist, nodes);
+                return new FloydWarshall(dist, nodes, edges);
             }
             default -> {
                 System.out.println("Invalid algorithm");

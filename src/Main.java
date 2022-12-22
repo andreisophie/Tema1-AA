@@ -5,6 +5,11 @@ import java.time.Instant;
 public class Main {
     private static final int NR_TESTS = 30;
 
+    /**
+     * args[0] = 1 for Dijkstra
+     *           2 for Bellman-Ford
+     *           3 for Floyd-Warshall
+     */
     public static void main(String[] args) throws IOException{
         for (int i = 1; i <= NR_TESTS; i++) {
             RWOperations.createFiles(i);

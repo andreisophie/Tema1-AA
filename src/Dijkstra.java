@@ -1,8 +1,9 @@
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Dijkstra extends ShortestPathAlgorithm {
-    public Dijkstra(int[][] dist, int nodes) {
-        super(dist, nodes);
+    public Dijkstra(int[][] dist, int nodes, ArrayList<Edge> edges) {
+        super(dist, nodes,edges);
     }
 
     private int findNextNode(int[] minDist, boolean[] viz) {
