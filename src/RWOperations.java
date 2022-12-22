@@ -65,22 +65,16 @@ public final class RWOperations {
             edges.add(new Edge(n1, n2, cost));
         }
 
-        switch (algorithmType) {
-            case 1 -> {
-                return new Dijkstra(dist, nodes, edges);
-            }
-            case 2 -> {
-                return new BellmanFord(dist, nodes, edges);
-            }
-            case 3 -> {
-                return new FloydWarshall(dist, nodes, edges);
-            }
+        return switch (algorithmType) {
+            case 1 -> new Dijkstra(dist, nodes, edges);
+            case 2 -> new BellmanFord(dist, nodes, edges);
+            case 3 -> new FloydWarshall(dist, nodes, edges);
             default -> {
                 System.out.println("Invalid algorithm");
                 System.exit(-1);
-                return null;
+                yield null;
             }
-        }
+        };
     }
 
     public static void writeOutputs(ShortestPathAlgorithm algorithm) throws IOException {
